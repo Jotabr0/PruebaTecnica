@@ -6,11 +6,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Http\Request;
 use Laravel\Sanctum\HasApiTokens;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -45,5 +50,17 @@ class User extends Authenticatable
 
     public function peliculas(){
         return $this->hasMany(Pelicula::class);
+    }
+
+    
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }
