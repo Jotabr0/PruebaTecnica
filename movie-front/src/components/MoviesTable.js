@@ -34,9 +34,8 @@ const MoviesTable = () => {
             (categoria) => categoria.nombre
           ),
         };
-        
       });
-      console.log("MOVIESDATA",moviesData);
+      console.log("MOVIESDATA", moviesData);
 
       setMovies(moviesData);
 
@@ -115,7 +114,14 @@ const MoviesTable = () => {
             <tr key={movie.id}>
               <td>{movie.nombre}</td>
               <td>{movie.anio_estreno}</td>
-              <td>{movie.portada}</td>
+              <td>
+                <img
+                  src={`http://localhost:8000/storage/${movie.portada}`}
+                  alt={`Portada de ${movie.nombre}`}
+                  style={{ width: "50px", height: "50px" }}
+                />
+              </td>
+              {/* <td>{movie.portada}</td> */}
               <td>
                 <Link to={`/edit/${movie.id}`} className="btn btn-warning">
                   Edit
@@ -128,7 +134,6 @@ const MoviesTable = () => {
                 </button>
               </td>
               <td>
-                
                 <ul>
                   {movie.categorias.map((categoria, index) => (
                     <li key={index}>{categoria}</li>

@@ -8,6 +8,7 @@ const MoviesCreate = () => {
   const [nombre, setNombre] = useState("");
   const [anio_estreno, setAnio_estreno] = useState("");
   const [portada, setPortada] = useState("");
+  const [portadaFile, setPortadaFile] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState([]);
   const navigate = useNavigate();
@@ -37,19 +38,39 @@ const MoviesCreate = () => {
 
   const store = (e) => {
     e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('nombre', nombre);
+    formData.append('anio_estreno', anio_estreno);
+    formData.append('categorias', categoriasSeleccionadas); // Convertir a cadena si es necesario
+  
+    // Agregar la imagen solo si se ha seleccionado
+    if (portadaFile) {
+      formData.append('portada', portadaFile);
+      console.log(portadaFile);
+    }
+  
     axios
-      .post(endpoint, {
-        nombre: nombre,
-        anio_estreno: anio_estreno,
-        portada: portada,
-        categorias: categoriasSeleccionadas, 
+      .post(endpoint, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       })
+
+    // axios
+    //   .post(endpoint, {
+    //     nombre: nombre,
+    //     anio_estreno: anio_estreno,
+    //     portada: portadaFile,
+    //     categorias: categoriasSeleccionadas,
+    //   })
+
       .then((response) => {
         setErrors(null);
         console.log(response);
         // Obtener el ID de la película recién creada
         const idPelicula = peliculaId;
-        console.log("Id de la pelicula",idPelicula);
+        console.log("Id de la pelicula", idPelicula);
 
         // Asociar categorías seleccionadas a la película
         axios
@@ -104,11 +125,17 @@ const MoviesCreate = () => {
         <div className="mb-3">
           <label className="form-label">Portada</label>
           <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setPortadaFile(e.target.files[0])}
+            className="form-control"
+          />
+          {/* <input
             value={portada}
             onChange={(e) => setPortada(e.target.value)}
             type="text"
             className="form-control"
-          />
+          /> */}
           {errors?.portada && (
             <div className="text-danger">{errors.portada[0]}</div>
           )}
@@ -147,7 +174,6 @@ const MoviesCreate = () => {
             <div className="text-danger">{errors.categorias[0]}</div>
           )}
         </div>
-       
 
         <button type="submit" className="btn btn-primary">
           Guardar

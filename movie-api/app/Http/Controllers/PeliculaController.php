@@ -114,16 +114,20 @@ class PeliculaController extends Controller
         $request->validate([
             'nombre'=>'required|string',
             'anio_estreno'=>'required|integer',
-            //'portada'=>'required|image|mimes:jpeg,png,jpg,gif',
-            'categorias'=>'required|array|min:1'
+            'portada'=>'required|image|mimes:jpeg,png,jpg,gif',
+            'categorias'=>'required|string|min:1'
         ], [
             'categorias.min' => 'Debe seleccionar al menos una categoría.',
         ]);
 
+        $portadaPath = $request->file('portada')->store('portadas', 'public');
+
         $pelicula = new Pelicula();
         $pelicula->nombre=$request->nombre;
         $pelicula->anio_estreno=$request->anio_estreno;
-        $pelicula->portada=$request->portada;
+        $pelicula->portada = $portadaPath;
+        
+        // $pelicula->portada=$request->portada;
 
         $pelicula->save();
         
