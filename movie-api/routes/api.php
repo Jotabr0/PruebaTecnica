@@ -52,7 +52,7 @@ Route::controller(PeliculaController::class)->group(function () {
     Route::get('/peliculas', 'peliculas');
     Route::post('/pelicula','store');
     Route::get('/pelicula/{id}','show');
-    Route::put('/pelicula/{id}','update');
+    Route::post('/pelicula/{id}','update');
     Route::delete('/pelicula/{id}','destroy');
     Route::post('/pelicula/{id}/categorias','asociarCategorias');
     Route::get('/categorias', 'categorias');

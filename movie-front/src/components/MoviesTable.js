@@ -10,12 +10,13 @@ const MoviesTable = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [ultimoId, setUltimoId] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("todas");
 
   useEffect(() => {
     getAllMovies();
     obtenerUltimoId();
     console.log(movies);
-  }, [currentPage, searchTerm]);
+  }, [currentPage, searchTerm,selectedCategory]);
 
   const getAllMovies = async () => {
     try {
@@ -23,7 +24,8 @@ const MoviesTable = () => {
         params: {
           page: currentPage,
           per_page: 5,
-          nombre: searchTerm, // Añadir el parámetro de búsqueda
+          nombre: searchTerm, 
+          categoria: selectedCategory,
         },
       });
 
@@ -44,6 +46,10 @@ const MoviesTable = () => {
     } catch (error) {
       console.error("Error al obtener las películas:", error);
     }
+  };
+
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
   };
 
   const deleteMovie = async (id) => {
@@ -97,6 +103,21 @@ const MoviesTable = () => {
           value={searchTerm}
           onChange={handleSearch}
         />
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label">Filtrar por categoría:</label>
+        <select
+          className="form-control"
+          value={selectedCategory}
+          onChange={handleCategoryChange}
+        >
+          <option value="todas">Todas las categorías</option>
+          {/* Aquí puedes obtener la lista de categorías desde tu API o proporcionarlas de alguna manera */}
+          <option value="accion">Acción</option>
+          <option value="comedia">Comedia</option>
+          {/* ... Agrega más opciones según tus categorías */}
+        </select>
       </div>
 
       <table className="table table-striped">

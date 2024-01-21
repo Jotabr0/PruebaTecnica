@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\Pelicula;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class PeliculaController extends Controller
 {
@@ -25,8 +26,22 @@ class PeliculaController extends Controller
             $query->where('nombre', 'like', '%' . $request->input('nombre') . '%');
         }
 
+        // Filtrar por categoría si se proporciona un parámetro de categoría
+        if ($request->has('categoria')) {
+            $categoria = $request->input('categoria');
+            
+            // Si la categoría es "Todas las categorías", no aplicar filtro por categoría
+            if ($categoria !== "todas") {
+                $query->whereHas('categorias', function ($categoriaQuery) use ($categoria) {
+                    $categoriaQuery->where('nombre', $categoria);
+                });
+            }
+        }
+
         $peliculas = $query->with('categorias')->paginate(5);
        // $peliculas = $query->paginate(5);
+
+       
 
         return response()->json($peliculas);
     }
@@ -157,31 +172,47 @@ class PeliculaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //Validacion
-        $request->validate([
+        
+        // Validación
+        $rules = [
             'nombre'=>'string',
-            'anio_estreno'=>'integer',
-            'portada'=>'string',
-            // 'portada'=>'image|mimes:jpeg,png,jpg,gif',
+            'anio_estreno'=>'required|integer',
+            // //'portada'=>'string',
+            // 'portada' => 'sometimes|image|mimes:jpeg,png,jpg,gif',
             'categorias'=>'array'
-        ]);
+        ];
 
-        //Actualizar pelicula
+        // Verificar si se proporcionó una nueva portada en la solicitud
+        if ($request->hasFile('portada')) {
+            $rules['portada'] = 'image|mimes:jpeg,png,jpg,gif';
+        }
+        //Validacion
+        $request->validate($rules);
+
+        // Obtener la película existente
         $pelicula = Pelicula::find($id);
 
-        $pelicula->update([
-            'nombre' => $request->nombre ?? $pelicula->nombre,
-            'anio_estreno' => $request->anio_estreno ?? $pelicula->anio_estreno,
-            'portada' => $request->portada ?? $pelicula->portada,
-            //'portada' => $request->file('portada') ? $request->file('portada')->store('portadas') : $pelicula->portada,
-        ]);
+        // Actualizar los campos de la película según la solicitud
+        $pelicula->nombre = $request->input('nombre', $pelicula->nombre);
+        $pelicula->anio_estreno = $request->input('anio_estreno', $pelicula->anio_estreno);
 
-        //Actualizar categorias
-        if($request->categorias){
-            $pelicula->categorias()->sync($request->categorias);
+        // Verificar si se proporcionó una nueva portada en la solicitud
+        if ($request->hasFile('portada')) {
+            // Subir la nueva portada y almacenar la ruta
+            $portadaPath = $request->file('portada')->store('portadas', 'public');
+            // Actualizar la portada en la película
+            $pelicula->portada = $portadaPath;
         }
 
-        return response()->json(['pelicula' => $pelicula,200]);
+        // Guardar los cambios en la película
+        $pelicula->save();
+
+        // Actualizar las categorías si se proporcionan en la solicitud
+        if ($request->has('categorias')) {
+            $pelicula->categorias()->sync($request->input('categorias'));
+        }
+
+        return response()->json(['pelicula' => $pelicula], 200);
     }
 
     /**
