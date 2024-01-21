@@ -179,7 +179,7 @@ class PeliculaController extends Controller
             'anio_estreno'=>'required|integer',
             // //'portada'=>'string',
             // 'portada' => 'sometimes|image|mimes:jpeg,png,jpg,gif',
-            'categorias'=>'array'
+            'categorias'=>'required|array'
         ];
 
         // Verificar si se proporcionó una nueva portada en la solicitud

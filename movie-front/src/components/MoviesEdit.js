@@ -13,6 +13,7 @@ const MoviesEdit = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const { id } = useParams();
+  const token = localStorage.getItem('jwt');
 
   const update = async (e) => {
     e.preventDefault();
@@ -30,6 +31,8 @@ const MoviesEdit = () => {
       await axios.post(`${endpoint}${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          'Authorization': `Bearer ${token}`
+          
         },
       });
 
@@ -47,16 +50,28 @@ const MoviesEdit = () => {
 
   useEffect(() => {
     const getMovieId = async () => {
-      const response = await axios.get(`${endpoint}${id}`);
+      const response = await axios.get(`${endpoint}${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setNombre(response.data.pelicula.nombre);
       setAnio_estreno(response.data.pelicula.anio_estreno);
   
       // Obtener las categorías de la base de datos
-      const categoriasResponse = await axios.get("http://localhost:8000/api/categorias");
+      const categoriasResponse = await axios.get("http://localhost:8000/api/categorias", {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setCategorias(categoriasResponse.data);
   
       // Obtener las categorías asociadas a la película
-      const categoriasAsociadas = await axios.get(`${endpoint}${id}/categorias`);
+      const categoriasAsociadas = await axios.get(`${endpoint}${id}/categorias`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
   
       // Extraer los IDs de las categorías asociadas
       setCategoriasSeleccionadas(categoriasAsociadas.data.categorias.map(cat => cat.id));
@@ -136,6 +151,9 @@ const MoviesEdit = () => {
               </div>
             ))}
           </div>
+          {errors?.categorias && (
+            <div className="text-danger">{errors.categorias[0]}</div>
+          )}
         </div>
         <button type="submit" className="btn btn-primary">
           Guardar

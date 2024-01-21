@@ -1,36 +1,45 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
 
-const RegisterForm = ({ onRegister }) => {
+const RegisterForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const handleRegister = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/register', { name, email, password });
-      const token = response.data.token;
+      const response = await axios.post('/api/auth/register', { name, email, password });
 
-      // Almacena el token en el localStorage
-      localStorage.setItem('token', token);
-
-      // Llama a la función proporcionada por las props para indicar que se ha registrado
-      onRegister();
+      if (response.status === 201) {
+        navigate('/');
+      }
     } catch (error) {
-      console.error('Error al registrarse:', error);
+      console.error('Error en el registro', error);
     }
   };
 
   return (
-    <div>
-      <h2>Registrarse</h2>
-      <label>Nombre:</label>
-      <input type="text" onChange={(e) => setName(e.target.value)} />
-      <label>Email:</label>
-      <input type="text" onChange={(e) => setEmail(e.target.value)} />
-      <label>Contraseña:</label>
-      <input type="password" onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={handleRegister}>Registrarse</button>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', maxWidth: '300px', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }}>
+        <label style={{ marginBottom: '10px' }}>
+          Nombre:
+          <input type="text" value={name} onChange={e => setName(e.target.value)} required style={{ width: '100%' }} />
+        </label>
+        <label style={{ marginBottom: '10px' }}>
+          Correo electrónico:
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} required style={{ width: '100%' }} />
+        </label>
+        <label style={{ marginBottom: '10px' }}>
+          Contraseña:
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} required style={{ width: '100%' }} />
+        </label>
+        <button type="submit" style={{ backgroundColor: '#007bff', color: 'white', padding: '10px', border: 'none', cursor: 'pointer' }}>Enviar</button>
+        <Link to="/" style={{ marginTop: '10px', textAlign: 'center', textDecoration: 'none', color: '#007bff' }}>Iniciar sesión</Link>
+      </form>
     </div>
   );
 };

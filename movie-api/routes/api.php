@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PeliculaController;
@@ -47,17 +49,54 @@ use App\Http\Controllers\CategoriaController;
 // Route::post('register', 'AuthController@register');
 // Route::get('/peliculas', [PeliculaController::class,'peliculas']);
 
-Route::controller(PeliculaController::class)->group(function () {
-    Route::get('/peliculas/usuario', 'index');
-    Route::get('/peliculas', 'peliculas');
-    Route::post('/pelicula','store');
-    Route::get('/pelicula/{id}','show');
-    Route::post('/pelicula/{id}','update');
-    Route::delete('/pelicula/{id}','destroy');
-    Route::post('/pelicula/{id}/categorias','asociarCategorias');
-    Route::get('/ultima/pelicula', 'ultimoId');
-    Route::get('/pelicula/{id}/categorias', 'categoriasAsociadas');
+// Route::controller(PeliculaController::class)->group(function () {
+//     Route::get('/peliculas/usuario', 'index');
+//     Route::get('/peliculas', 'peliculas');
+//     Route::post('/pelicula','store');
+//     Route::get('/pelicula/{id}','show');
+//     Route::post('/pelicula/{id}','update');
+//     Route::delete('/pelicula/{id}','destroy');
+//     Route::post('/pelicula/{id}/categorias','asociarCategorias');
+//     Route::get('/ultima/pelicula', 'ultimoId');
+//     Route::get('/pelicula/{id}/categorias', 'categoriasAsociadas');
 
+// });
+
+// Route::get('/categorias', [CategoriaController::class, 'index']);
+
+// Route::post('/login', [AuthController::class, 'login'])->name('login');
+// Route::post('/register', [AuthController::class, 'register']);
+
+// Route::group(['middleware' => 'auth.jwt'], function () {
+//     Route::post('/logout', 'AuthController@logout');
+//     Route::post('/me','AuthController@me');
+// });
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+], function ($router){
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::get('/me', [AuthController::class, 'me']);
 });
 
-Route::get('/categorias', [CategoriaController::class, 'index']);
+Route::group(['middleware' => ['auth:api']], function() {
+    
+    Route::controller(PeliculaController::class)->group(function () {
+        Route::get('/peliculas/usuario', 'index');
+        Route::get('/peliculas', 'peliculas');
+        Route::post('/pelicula','store');
+        Route::get('/pelicula/{id}','show');
+        Route::post('/pelicula/{id}','update');
+        Route::delete('/pelicula/{id}','destroy');
+        Route::post('/pelicula/{id}/categorias','asociarCategorias');
+        Route::get('/ultima/pelicula', 'ultimoId');
+        Route::get('/pelicula/{id}/categorias', 'categoriasAsociadas');
+    
+    });
+    
+    Route::get('/categorias', [CategoriaController::class, 'index']);
+
+
+});

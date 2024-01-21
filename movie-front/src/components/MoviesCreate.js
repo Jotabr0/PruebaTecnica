@@ -14,6 +14,7 @@ const MoviesCreate = () => {
   const navigate = useNavigate();
   const [peliculaId, setPeliculaId] = useState("");
   const { id } = useParams();
+  const token = localStorage.getItem("jwt");
 
   useEffect(() => {
     setPeliculaId(id);
@@ -25,7 +26,12 @@ const MoviesCreate = () => {
     const fetchCategorias = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/categorias`
+          `http://localhost:8000/api/categorias`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         setCategorias(response.data);
       } catch (error) {
@@ -40,30 +46,31 @@ const MoviesCreate = () => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append('nombre', nombre);
-    formData.append('anio_estreno', anio_estreno);
-    formData.append('categorias', categoriasSeleccionadas); // Convertir a cadena si es necesario
-  
+    formData.append("nombre", nombre);
+    formData.append("anio_estreno", anio_estreno);
+    formData.append("categorias", categoriasSeleccionadas); // Convertir a cadena si es necesario
+
     // Agregar la imagen solo si se ha seleccionado
     if (portadaFile) {
-      formData.append('portada', portadaFile);
+      formData.append("portada", portadaFile);
       console.log(portadaFile);
     }
-  
+
     axios
       .post(endpoint, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       })
 
-    // axios
-    //   .post(endpoint, {
-    //     nombre: nombre,
-    //     anio_estreno: anio_estreno,
-    //     portada: portadaFile,
-    //     categorias: categoriasSeleccionadas,
-    //   })
+      // axios
+      //   .post(endpoint, {
+      //     nombre: nombre,
+      //     anio_estreno: anio_estreno,
+      //     portada: portadaFile,
+      //     categorias: categoriasSeleccionadas,
+      //   })
 
       .then((response) => {
         setErrors(null);
@@ -74,9 +81,17 @@ const MoviesCreate = () => {
 
         // Asociar categorías seleccionadas a la película
         axios
-          .post(`${endpoint}/${idPelicula}/categorias`, {
-            categorias: categoriasSeleccionadas,
-          })
+          .post(
+            `${endpoint}/${idPelicula}/categorias`,
+            {
+              categorias: categoriasSeleccionadas,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
           .then(() => {
             navigate("/");
           })

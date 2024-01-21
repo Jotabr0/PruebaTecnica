@@ -12,6 +12,7 @@ const MoviesTable = () => {
   const [ultimoId, setUltimoId] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("todas");
   const [categories, setCategories] = useState([]);
+  const token = localStorage.getItem('jwt');
 
   useEffect(() => {
     getAllMovies();
@@ -22,7 +23,11 @@ const MoviesTable = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${endpoint}/categorias`);
+      const response = await axios.get(`${endpoint}/categorias`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setCategories(response.data);
     } catch (error) {
       console.error("Error al obtener las categorías:", error);
@@ -38,6 +43,9 @@ const MoviesTable = () => {
           nombre: searchTerm, 
           categoria: selectedCategory,
         },
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       const moviesData = response.data.data.map((movie) => {
@@ -64,7 +72,11 @@ const MoviesTable = () => {
   };
 
   const deleteMovie = async (id) => {
-    await axios.delete(`${endpoint}/pelicula/${id}`);
+    await axios.delete(`${endpoint}/pelicula/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     getAllMovies();
   };
 
@@ -86,7 +98,11 @@ const MoviesTable = () => {
 
   const obtenerUltimoId = async () => {
     try {
-      const response = await axios.get(`${endpoint}/ultima/pelicula`);
+      const response = await axios.get(`${endpoint}/ultima/pelicula`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const ultimoId = response.data;
       setUltimoId(ultimoId);
       console.log(response.data);

@@ -1,38 +1,48 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
+import { useNavigate, Link } from 'react-router-dom';
 
-const LoginForm = ({ onLogin }) => {
+const LoginForm = ({ setUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/login', { email, password });
-      const token = response.data.token;
+      const response = await axios.post('/api/auth/login', { email, password });
+      const token = response.data.access_token;
+      localStorage.setItem('jwt', token);
 
-      // Almacena el token en el localStorage
-      localStorage.setItem('token', token);
+      const userResponse = await axios.get('/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const user = userResponse.data;
+      setUser(user);
 
-      // Descodifica el token para obtener la información del usuario (opcional)
-      const decoded = jwtDecode(token);
-      console.log('Usuario autenticado:', decoded);
-
-      // Llama a la función proporcionada por las props para indicar que se ha iniciado sesión
-      onLogin();
+      navigate('/');
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
+      console.error('Error en el inicio de sesión', error);
     }
   };
 
   return (
-    <div>
-      <h2>Iniciar Sesión</h2>
-      <label>Email:</label>
-      <input type="text" onChange={(e) => setEmail(e.target.value)} />
-      <label>Contraseña:</label>
-      <input type="password" onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={handleLogin}>Iniciar Sesión</button>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', maxWidth: '300px', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }}>
+        <label style={{ marginBottom: '10px' }}>
+          Correo electrónico:
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} required style={{ width: '100%' }} />
+        </label>
+        <label style={{ marginBottom: '10px' }}>
+          Contraseña:
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} required style={{ width: '100%' }} />
+        </label>
+        <button type="submit" style={{ backgroundColor: '#007bff', color: 'white', padding: '10px', border: 'none', cursor: 'pointer' }}>Iniciar sesión</button>
+        <Link to="/register" style={{ marginTop: '10px', textAlign: 'center', textDecoration: 'none', color: '#007bff' }}>Registrarse</Link>
+      </form>
     </div>
   );
 };
