@@ -55,7 +55,6 @@ Route::controller(PeliculaController::class)->group(function () {
     Route::post('/pelicula/{id}','update');
     Route::delete('/pelicula/{id}','destroy');
     Route::post('/pelicula/{id}/categorias','asociarCategorias');
-    Route::get('/categorias', 'categorias');
     Route::get('/ultima/pelicula', 'ultimoId');
     Route::get('/pelicula/{id}/categorias', 'categoriasAsociadas');
 

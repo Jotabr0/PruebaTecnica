@@ -11,12 +11,23 @@ const MoviesTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [ultimoId, setUltimoId] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("todas");
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     getAllMovies();
     obtenerUltimoId();
+    fetchCategories();
     console.log(movies);
   }, [currentPage, searchTerm,selectedCategory]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${endpoint}/categorias`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error al obtener las categorías:", error);
+    }
+  };
 
   const getAllMovies = async () => {
     try {
@@ -113,10 +124,11 @@ const MoviesTable = () => {
           onChange={handleCategoryChange}
         >
           <option value="todas">Todas las categorías</option>
-          {/* Aquí puedes obtener la lista de categorías desde tu API o proporcionarlas de alguna manera */}
-          <option value="accion">Acción</option>
-          <option value="comedia">Comedia</option>
-          {/* ... Agrega más opciones según tus categorías */}
+          {categories.map((category) => (
+            <option key={category.id} value={category.nombre}>
+              {category.nombre}
+            </option>
+          ))}
         </select>
       </div>
 

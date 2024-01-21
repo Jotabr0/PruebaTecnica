@@ -227,4 +227,19 @@ class PeliculaController extends Controller
         return response()->json(['message'=>'Pelicula borrada correctamente'],200);
 
     }
+
+    public function categoriasAsociadas(string $id)
+{
+    try {
+        // Obtener la película por su ID
+        $pelicula = Pelicula::findOrFail($id);
+
+        // Obtener las categorías asociadas a la película
+        $categoriasAsociadas = $pelicula->categorias;
+
+        return response()->json(['categorias' => $categoriasAsociadas], 200);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Error al obtener categorías asociadas'], 500);
+    }
+}
 }
