@@ -9,7 +9,7 @@ Hay varias estrategias que podemos implementar para mejorar el rendimiento en un
 - Optimización de consultas a la base de datos: Nos aseguramos de que las consultas a la base de datos estén optimizadas. Esto puede incluir la creación de índices para las columnas que se utilizan con frecuencia en las consultas, la normalización de la base de datos y la eliminación de consultas innecesarias.
 
 - Balanceo de carga: Si tienemos un gran número de usuarios, podemos considerar la implementación de un balanceador de carga para distribuir las solicitudes entre varios servidores.
-- 
+  
 
 ## ¿Tiene sentido un endpoint de logout en este tipo de API?
 
