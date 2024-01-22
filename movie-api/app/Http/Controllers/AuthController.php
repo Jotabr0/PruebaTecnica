@@ -27,92 +27,12 @@ class AuthController extends Controller
         return response()->json(auth()->user());
     }
 
-
-
-    // public function register(Request $request)
-    // {
-
-
-    //     $user = new  User();
-	// 	$user->name = $request->name;
-	// 	$user->email = $request->email;
-	// 	$user->password = bcrypt($request->password);
-	// 	$user->save();
-
-	// 	if ($this->loginAfterSignUp) {
-	// 		return  $this->login($request);
-	// 	}
-
-	// 	return  response()->json([
-	// 		'status' => 'ok',
-	// 		'data' => $user
-	// 	], 200);
-
-
-    //     // $this->validate($request,[
-    //     //     'email'=>'required',
-    //     //     'password'=>'required'
-    //     // ]);
-
-
-    //     // $validator = Validator::make($request->all(), [
-    //     //     'name' => 'required|string',
-    //     //     'email' => 'required|string|email|unique:users',
-    //     //     'password' => 'required|string|min:6',
-    //     // ]);
-
-    //     // if ($validator->fails()) {
-    //     //     return response()->json(['error' => $validator->errors()], 400);
-    //     // }
-
-    //     // $user = User::create([
-    //     //     'name' => $request->name,
-    //     //     'email' => $request->email,
-    //     //     'password' => bcrypt($request->password),
-    //     // ]);
-
-    //     // return $this->login($request); // Llamar al método login para generar el token después del registro
-    // }
-
-
-    // public  function  login(Request  $request) {
-	// 	$input = $request->only('email', 'password');
-	// 	$jwt_token = null;
-	// 	if (!$jwt_token = JWTAuth::attempt($input)) {
-	// 		return  response()->json([
-	// 			'status' => 'invalid_credentials',
-	// 			'message' => 'Correo o contraseña no válidos.',
-	// 		], 401);
-	// 	}
-
-	// 	return  response()->json([
-	// 		'status' => 'ok',
-	// 		'token' => $jwt_token,
-	// 	]);
-	// }
-
-
     public  function  logout() {
 
         auth()->logout();
 
         return response()->json(['message' => 'Succesfully logged out']);
-		// $this->validate($request, [
-		// 	'token' => 'required'
-		// ]);
-
-		// try {
-		// 	JWTAuth::invalidate($request->token);
-		// 	return  response()->json([
-		// 		'status' => 'ok',
-		// 		'message' => 'Cierre de sesión exitoso.'
-		// 	]);
-		// } catch (JWTException  $exception) {
-		// 	return  response()->json([
-		// 		'status' => 'unknown_error',
-		// 		'message' => 'Al usuario no se le pudo cerrar la sesión.'
-		// 	], 500);
-		// }
+		
 	}
 
 
@@ -125,18 +45,6 @@ class AuthController extends Controller
 		return  response()->json(['user' => $user]);
 	}
 
-
-    // public function login(Request $request)
-    // {
-    //     $credentials = $request->only('email', 'password');
-
-    //     if (!$token = auth()->attempt($credentials)) {
-    //         return response()->json(['error' => 'Unauthorized'], 401);
-    //     }
-
-    //     return $this->respondWithToken($token);
-    // }
-
     protected function respondWithToken($token)
     {
         return response()->json([
@@ -145,9 +53,6 @@ class AuthController extends Controller
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
-
-
-
 
     public function register(Request $request)
     {
@@ -186,18 +91,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // // Crear una cookie con el token
-        // $cookie = cookie('jwt', $token, 60); // La cookie expira después de 60 minutos
-
-        // return response()->json(['token' => $token]);
-
         return $this->respondWithToken($token);
     }
-
-
-
-
-
-
 
 }

@@ -14,7 +14,6 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom';
 const App = () => {
 
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('jwt');
@@ -28,14 +27,9 @@ const App = () => {
         setUser(response.data);
       }).catch(error => {
         console.error('Error al obtener la información del usuario', error);
-        setIsLoading(false);
       });
     }
   }, []);
-
-  // if (isLoading) {
-  //   return <div>Cargando...</div>;  // Muestra una pantalla de carga
-  // }
 
   return (
     <div className="App">
@@ -46,14 +40,13 @@ const App = () => {
           {user ? (
             <>
               <Route path='/' element={ <MoviesTable/>} />
-              <Route path='/create' element={ <MoviesCreate/>} />
               <Route path='/create/:id?' element={<MoviesCreate />} />
               <Route path='/edit/:id' element={ <MoviesEdit/>} />
             </>
           ) : (
             <>
             <Route path='/' element={ <LoginForm setUser={setUser}/>} />
-            <Route path='/register' element={ <RegisterForm />} /> {/* Añade esta línea */}
+            <Route path='/register' element={ <RegisterForm />} /> 
           </>
           )}
         </Routes>

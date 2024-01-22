@@ -23,55 +23,6 @@ use App\Http\Controllers\CategoriaController;
      return $request->user();
  });
 
-// // Rutas Protegidas por Token JWT
-// Route::middleware('auth:api')->group(function () {
-//     Route::resource('peliculas', PeliculaController::class);
-// });
-
-// //Rutas Autenticación
-// Route::post('register', [AuthController::class, 'register'])->name('register');;
-// Route::post('login', [AuthController::class, 'login'])->name('login');
-
-// Route::group([
-
-//     'middleware' => 'api',
-//     'prefix' => 'auth'
-
-// ], function ($router) {
-
-//     Route::post('login', 'AuthController@login');
-//     Route::post('logout', 'AuthController@logout');
-//     Route::post('refresh', 'AuthController@refresh');
-//     Route::post('register', 'AuthController@me');
-
-// });
-
-// Route::post('register', 'AuthController@register');
-// Route::get('/peliculas', [PeliculaController::class,'peliculas']);
-
-// Route::controller(PeliculaController::class)->group(function () {
-//     Route::get('/peliculas/usuario', 'index');
-//     Route::get('/peliculas', 'peliculas');
-//     Route::post('/pelicula','store');
-//     Route::get('/pelicula/{id}','show');
-//     Route::post('/pelicula/{id}','update');
-//     Route::delete('/pelicula/{id}','destroy');
-//     Route::post('/pelicula/{id}/categorias','asociarCategorias');
-//     Route::get('/ultima/pelicula', 'ultimoId');
-//     Route::get('/pelicula/{id}/categorias', 'categoriasAsociadas');
-
-// });
-
-// Route::get('/categorias', [CategoriaController::class, 'index']);
-
-// Route::post('/login', [AuthController::class, 'login'])->name('login');
-// Route::post('/register', [AuthController::class, 'register']);
-
-// Route::group(['middleware' => 'auth.jwt'], function () {
-//     Route::post('/logout', 'AuthController@logout');
-//     Route::post('/me','AuthController@me');
-// });
-
 Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'

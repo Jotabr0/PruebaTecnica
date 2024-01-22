@@ -7,19 +7,17 @@ use Illuminate\Http\JsonResponse;
 use App\Models\Pelicula;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class PeliculaController extends Controller
 {
 
-    // public function peliculas(): JsonResponse
-    // {
-    //     $peliculas = Pelicula::paginate(5);
-    //     return response()->json($peliculas);
-    // }
-
     public function peliculas(Request $request): JsonResponse
     {
-        $query = Pelicula::query();
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        $query = $user->peliculas();
 
         // Filtrar por nombre si se proporciona un parámetro de búsqueda
         if ($request->has('nombre')) {
@@ -41,8 +39,6 @@ class PeliculaController extends Controller
         $peliculas = $query->with('categorias')->paginate(5);
        // $peliculas = $query->paginate(5);
 
-       
-
         return response()->json($peliculas);
     }
     /**
@@ -52,39 +48,25 @@ class PeliculaController extends Controller
     {
         $peliculas = Auth::user()->peliculas;
 
-    //     // Filtros
-    //     if ($request->has('categoria')) {
-    //     $peliculas->whereHas('categorias', function ($query) use ($request) {
-    //         $query->where('nombre', $request->categoria);
-    //     });
-    // }
-
-    //  if ($request->has('nombre')) {
-    //     $peliculas->where('nombre', 'like', '%' . $request->nombre . '%');
-    // }
-
         $peliculas = $peliculas->get();
 
         return response()->json(['peliculas' => $peliculas], 200);
     }
 
-
-
     public function asociarCategorias(Request $request, $id)
 {
     try {
         $categoriasSeleccionadas = $request->input('categorias', []);
-
-        // Desasociar todas las categorías existentes de la película
+    
         $pelicula = Pelicula::find($id);
-        //$pelicula->categorias()->detach();
 
         // Asociar las categorías seleccionadas a la película
         $pelicula->categorias()->attach($categoriasSeleccionadas);
 
         return response()->json(['message' => 'Categorías asociadas con éxito']);
-    } catch (\Exception $e) {
-        \Log::error('Error al asociar categorías a la película:', ['error' => $e->getMessage()]);
+    
+    }   catch (\Exception $e) {
+
         return response()->json(['error' => 'Error al asociar categorías a la película'], 500);
     }
 }
@@ -106,11 +88,6 @@ class PeliculaController extends Controller
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }
-
-
-
-
-
 
     /**
      * Show the form for creating a new resource.
@@ -135,18 +112,19 @@ class PeliculaController extends Controller
             'categorias.min' => 'Debe seleccionar al menos una categoría.',
         ]);
 
+         // Obtén el usuario autenticado
+        $user = Auth::user();
+
         $portadaPath = $request->file('portada')->store('portadas', 'public');
 
         $pelicula = new Pelicula();
         $pelicula->nombre=$request->nombre;
         $pelicula->anio_estreno=$request->anio_estreno;
         $pelicula->portada = $portadaPath;
-        
-        // $pelicula->portada=$request->portada;
+        $pelicula->user_id = $user->id;
 
         $pelicula->save();
-        
-       
+             
     }
 
     /**
@@ -177,8 +155,6 @@ class PeliculaController extends Controller
         $rules = [
             'nombre'=>'string',
             'anio_estreno'=>'required|integer',
-            // //'portada'=>'string',
-            // 'portada' => 'sometimes|image|mimes:jpeg,png,jpg,gif',
             'categorias'=>'required|array'
         ];
 

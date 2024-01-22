@@ -145,12 +145,7 @@ const MoviesCreate = () => {
             onChange={(e) => setPortadaFile(e.target.files[0])}
             className="form-control"
           />
-          {/* <input
-            value={portada}
-            onChange={(e) => setPortada(e.target.value)}
-            type="text"
-            className="form-control"
-          /> */}
+          
           {errors?.portada && (
             <div className="text-danger">{errors.portada[0]}</div>
           )}
